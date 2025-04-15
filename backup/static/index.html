@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Futuristic TTS Translator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Use a modern Google Font -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="theme-light">
+  <!-- === HEADER / THEME TOGGLE & LAYOUT SWITCH === -->
+  <header class="top-bar">
+    <div class="right-controls">
+      <label for="themeSelect">Theme:</label>
+      <select id="themeSelect">
+        <option value="theme-light">Light Mode</option>
+        <option value="theme-dark">Dark Mode</option>
+        <option value="theme-contrast">High Contrast</option>
+        <option value="theme-colorblind">Color-Blind Friendly</option>
+      </select>
+      <label>
+        <input type="checkbox" id="largeBtnToggle" /> Large Buttons
+      </label>
+      <!-- Button to switch the layout of columns -->
+      <button id="switchLayoutBtn" title="Switch Layout">Switch Layout</button>
+      <button id="helpBtn" title="Help"><i class="fas fa-question-circle"></i></button>
+    </div>
+  </header>
+
+  <!-- === MAIN CONTENT === -->
+  <main>
+    <h1><i class="fas fa-language"></i> Text-to-Speech Translator</h1>
+    
+    <!-- DETECTED LANGUAGE POPUP -->
+    <div id="languageDetectPopup" class="language-popup" style="display: none;"></div>
+
+    <!-- 2-COLUMN LAYOUT CONTAINER -->
+    <div id="layoutContainer" class="layout-container">
+      
+      <!-- LEFT COLUMN: TEXT AREA & CONTROLS -->
+      <div class="column-left">
+        <label for="text">
+          Enter Text: 
+          <span id="charCount">0 / 1500</span>
+        </label>
+        <textarea 
+          id="text" 
+          maxlength="1500" 
+          placeholder="Type or paste text here..."
+          rows="6"></textarea>
+
+        <!-- READ-ONLY OVERLAY FOR WORD HIGHLIGHTING (hidden by default) -->
+        <div id="highlightContainer" class="highlight-container" style="display: none;"></div>
+        
+        <!-- SPEECH CONTROL BUTTONS -->
+        <div class="control-buttons">
+          <button id="speakBtn"><i class="fas fa-play"></i> Speak</button>
+          <button id="pauseBtn"><i class="fas fa-pause"></i> Pause</button>
+          <button id="resumeBtn"><i class="fas fa-play-circle"></i> Resume</button>
+          <button id="stopBtn"><i class="fas fa-stop"></i> Stop</button>
+          <button id="clearBtn"><i class="fas fa-broom"></i> Clear</button>
+        </div>
+
+        <div class="status" id="statusMsg">Status: Ready</div>
+      </div>
+
+      <!-- RIGHT COLUMN: VOICE & SETTINGS -->
+      <div class="column-right">
+        <!-- Language & Voice Selection -->
+        <div class="control-item">
+          <label for="language">
+            Language &amp; Voice:
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Choose a voice (Male or Female) for your language/accent.
+Some devices may not have all voices installed."></i>
+          </label>
+          <select id="language"></select>
+          <button id="previewBtn" title="Preview Voice"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Speed Control -->
+        <div class="control-item">
+          <label for="speed">
+            Speed: <span id="speedVal">1.00</span>x
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Adjust how fast the voice speaks (0.5 - 2.0)."></i>
+          </label>
+          <input type="range" id="speed" min="0.5" max="2" step="0.05" value="1" />
+        </div>
+
+        <!-- Pitch Control -->
+        <div class="control-item">
+          <label for="pitch">
+            Pitch: <span id="pitchVal">1.00</span>
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Shift the voice's tone higher or lower."></i>
+          </label>
+          <input type="range" id="pitch" min="0.5" max="2" step="0.05" value="1" />
+        </div>
+
+        <!-- Volume Control -->
+        <div class="control-item">
+          <label for="volume">
+            Volume: <span id="volumeVal">1.00</span>
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Control how loud the voice is."></i>
+          </label>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="1" />
+        </div>
+
+        <!-- Preset Font Size -->
+        <div class="control-item">
+          <label for="fontSize">
+            Font Size:
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Choose a preset font size for your text."></i>
+          </label>
+          <select id="fontSize">
+            <option value="14">Small</option>
+            <option value="18" selected>Medium</option>
+            <option value="22">Large</option>
+          </select>
+        </div>
+
+        <!-- Custom Font Size -->
+        <div class="control-item">
+          <label for="fontSlider">
+            Custom Font Size: <span id="fontSliderVal">18px</span>
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Fine-tune the font size beyond the presets."></i>
+          </label>
+          <input type="range" id="fontSlider" min="12" max="32" step="1" value="18" />
+        </div>
+
+        <!-- Line Spacing Control -->
+        <div class="control-item">
+          <label for="lineSpacing">
+            Line Spacing: <span id="lineSpacingVal">1.5</span>
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Extra spacing can help readability."></i>
+          </label>
+          <input type="range" id="lineSpacing" min="1" max="3" step="0.1" value="1.5" />
+        </div>
+
+        <!-- Auto-Detect Language -->
+        <div class="control-item">
+          <label>
+            <input type="checkbox" id="autoDetect" />
+            Auto-detect Language
+            <i class="fas fa-question-circle help-icon"
+               data-tooltip="Automatically detects the language on each keystroke."></i>
+          </label>
+        </div>
+
+        <!-- Optional Audio Preview (hidden by default) -->
+        <audio id="audioPreview" controls style="display: none;"></audio>
+      </div>
+    </div>
+  </main>
+
+  <!-- === COMIC-STYLE TOOLTIP (Populated dynamically via script.js) === -->
+  <div id="tooltipBox" class="tooltip-box" style="display: none;"></div>
+
+  <!-- === MODAL FOR HELP & FAQ === -->
+  <div id="helpModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <span class="close" id="helpClose">&times;</span>
+      <h2>Help &amp; FAQ</h2>
+      <ul>
+        <li><strong>Speak:</strong> Reads text aloud with the selected voice and accent.</li>
+        <li><strong>Preview:</strong> Try the selected voice before speaking.</li>
+        <li><strong>Highlighting:</strong> Real-time word highlighting during speech playback.</li>
+        <li><strong>Auto-Detect:</strong> Automatically detects the language of your text.</li>
+        <li><strong>Shortcuts:</strong>
+          <ul>
+            <li><kbd>Space</kbd> – Play/Pause</li>
+            <li><kbd>Esc</kbd> – Stop</li>
+            <li><kbd>R</kbd> – Resume</li>
+            <li><kbd>Ctrl + ↑ / ↓</kbd> – Adjust Font Size</li>
+          </ul>
+        </li>
+      </ul>
+      <p>
+        <em>Explore more advanced accessibility options like large buttons, line spacing, color contrast, and layout switching!</em>
+      </p>
+    </div>
+  </div>
+<!-- Icon Help Modal -->
+<div id="iconHelpModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" id="iconHelpClose">&times;</span>
+    <!-- You may place an image or help text below -->
+    <p id="iconHelpCaption"></p>
+  </div>
+</div>
+
+  <!-- === SCRIPT === -->
+  <script src="script.js"></script>
+</body>
+</html>

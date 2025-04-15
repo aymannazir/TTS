@@ -1,0 +1,31 @@
+==============================
+✅ HOW TO RUN THE TTS PROJECT
+==============================
+
+🔧 REQUIREMENTS:
+- Python 3.8 or higher
+- Google Chrome browser (for Web Speech API to work properly)
+
+📦 PYTHON DEPENDENCIES:
+Install them using:
+    pip install Flask langdetect googletrans==4.0.0-rc1
+
+🗂️ FOLDER STRUCTURE (VERY IMPORTANT):
+
+    /project-folder/
+    ├── app.py
+    └── /static/
+        ├── index.html
+        ├── script.js
+        ├── styles.css
+
+🚀 TO RUN LOCALLY:
+1. Open terminal or command prompt
+2. Navigate to the project folder:
+       cd path/to/project-folder
+3. Run the Flask app:
+       python app.py
+4. Open browser and go to:
+       http://localhost:5000
+
+That’s it. Everything runs locally. No frameworks. No compilers. No database.
